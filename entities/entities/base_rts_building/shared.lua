@@ -1,0 +1,1 @@
+ENT.Type = "anim"ENT.Base = "base_rts_thing"ENT.IsBuilding = truefunction ENT:SetupDataTables()	self:GetBaseClass("base_rts_thing").SetupDataTables(self)	self:DTVar("Bool", 0, "Built")end

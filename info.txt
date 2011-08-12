@@ -1,0 +1,29 @@
+"Gamemode"
+{
+        "name"  "RTS"
+        "version" "1"
+
+        "author_name" "Jcw87"
+        "author_email" ""
+        "author_url" ""
+        
+        "info"  "RTS Gamemode"
+        "icon" ""
+        "hide" "0"
+
+        "mappattern"
+        {
+            "1" "^rts_"
+            "2" "^emp_"
+        }
+        
+        "fretta_maps"
+        {
+            "1" "^rts_"
+            "2" "^emp_"
+        }
+        
+        
+        "selectable"    "1"
+        "description"   "RTS meets FPS"
+}

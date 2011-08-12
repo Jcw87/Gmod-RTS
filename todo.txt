@@ -1,0 +1,6 @@
+Add commander mode.
+Add all buildings.
+Add weapons.
+Add classes.
+Make minimap function like a proper RTS minimap
+In-Game bug reports.
