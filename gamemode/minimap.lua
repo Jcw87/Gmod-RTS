@@ -11,6 +11,7 @@ local LocalPlayer = LocalPlayer
 local Material = Material
 local pairs = pairs
 local tonumber = tonumber
+local Vector = Vector
 
 module("minimap")
 
@@ -44,7 +45,7 @@ local function think()
 		if !k:IsValid() then continue end
 		local pos = k:GetPos()
 		local angle = 0
-		if k:IsPlayer() then angle = k:EyeAngles
+		if k:IsPlayer() then angle = k:EyeAngles() - 90 end
 		v.pos = Vector(pos.x, pos.y, angle)
 	end
 end
