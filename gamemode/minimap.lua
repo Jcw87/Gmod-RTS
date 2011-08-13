@@ -7,13 +7,14 @@ local surface = surface
 local team = team
 local util = util
 local ErrorNoHalt = ErrorNoHalt
+local LocalPlayer = LocalPlayer
 local Material = Material
 local pairs = pairs
 local tonumber = tonumber
 
 module("minimap")
 
-local x, y = 0, 0
+local x, y = 16, 16
 local w, h = 256, 256
 
 local map_material
@@ -36,8 +37,26 @@ local tomini_ratio_y = 1
 local sector_width = 256
 local sector_width = 256
 
-function Register(ent)
+local Ents = {}
 
+local function think()
+	for k, v in pairs(Ents) do
+		if !k:IsValid() then continue end
+		local pos = k:GetPos()
+		local angle = 0
+		if k:IsPlayer() then angle = k:EyeAngles
+		v.pos = Vector(pos.x, pos.y, angle)
+	end
+end
+
+function Register(ent)
+	local ent_id = ent:EntIndex()
+	Ents[ent] = {}
+end
+
+function UnRegister(ent)
+	local ent_id = ent:EntIndex()
+	Ents[ent_id] = nil
 end
 
 function LoadEmpiresScript()
@@ -49,7 +68,7 @@ function LoadEmpiresScript()
 	
 	if (CLIENT) then
 		map_material_name = t.image or ""
-		map_material = Material(t.image)
+		map_material = Material(map_material_name)
 		map_texture = map_material:GetMaterialTexture("$basetexture")
 		local texture_w = map_texture:GetActualWidth() or 64
 		local texture_h = map_texture:GetActualHeight() or 64
@@ -79,6 +98,10 @@ function WorldToMinimap(worldx, worldy)
 end
 
 if (CLIENT) then
+	local Materials = {
+		["player"] = Material("vgui/player"),
+		["rts_barracks"] = Material("minimap/mmico_barracks")
+	}
 	function SetRenderBounds(newx, newy, neww, newh)
 		x, y, w, h = newx, newy, neww, newh
 	end
@@ -94,10 +117,18 @@ if (CLIENT) then
 			local pos = v:GetPos()
 			local minix, miniy = WorldToMinimap(pos.x, pos.y)
 			local color = team.GetColor(v:Team())
-			surface.SetMaterial(v.MinimapMaterial)
+			surface.SetMaterial(Materials[v:GetClass()])
 			surface.SetDrawColor(color.r, color.g, color.b, color.a)
-			surface.DrawTexturedRectRotated((minix*w) + x, (miniy*h) + y, 32, 32, v:EyeAngles().y - 90)
+			local angle = v:IsPlayer() and (v:EyeAngles().y - 90) or 0
+			surface.DrawTexturedRectRotated((minix*w) + x, (miniy*h) + y, 32, 32, angle)
 		end
+		local pos = LocalPlayer():GetPos()
+		local minix, miniy = WorldToMinimap(pos.x, pos.y)
+		surface.SetMaterial(Materials.player)
+		surface.SetDrawColor(255, 255, 255, 128)
+		local angle = LocalPlayer():EyeAngles().y - 90
+		surface.DrawTexturedRectRotated((minix*w) + x, (miniy*h) + y, 48, 48, angle)
+		
 		return true
 	end
 end

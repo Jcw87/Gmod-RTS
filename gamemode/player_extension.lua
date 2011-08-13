@@ -15,7 +15,3 @@ if SERVER then
 		end
 	end
 end
-
-if CLIENT then
-	meta.MinimapMaterial = Material("vgui/player")
-end

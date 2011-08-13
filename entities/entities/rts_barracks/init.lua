@@ -28,6 +28,7 @@ function ENT:Initialize()
 end
 
 function ENT:CallOnRemove()
+	self:GetBaseClass("base_rts_thing").CallOnRemove(self)
 	for k, v in pairs(self.SpawnPoints) do
 		v:Remove()
 	end

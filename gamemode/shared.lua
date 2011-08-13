@@ -94,6 +94,8 @@ function GM:CreateTeams()
 		team.SetUp( TEAM_GREEN, "Green Team", color_green, true )
 		team.SetClass( TEAM_GREEN, TeamClasses )
 	end
+	team.SetUp( TEAM_CONNECTING, "Joining/Connecting", Color( 200, 200, 200 ), false )
+	team.SetUp( TEAM_UNASSIGNED, "Unassigned", Color( 200, 200, 200 ), false )
 	team.SetUp( TEAM_SPECTATOR, "Spectators", Color( 200, 200, 200 ), true )
 	team.SetSpawnPoint( TEAM_SPECTATOR, "info_player_start" )
 	team.SetClass( TEAM_SPECTATOR, { "Spectator" } )

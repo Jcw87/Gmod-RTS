@@ -17,9 +17,15 @@ end
 
 function GM:PlayerInitialSpawn(ply)
 	self.BaseClass:PlayerInitialSpawn(ply)
+	minimap.Register(ply)
 	umsg.Start("UpdateTeams", ply)
 	umsg.Char(GAMEMODE.TeamMask)
 	umsg.End()
+end
+
+function GM:PlayerDisconnected(ply)
+	self.BaseClass:PlayerDisconnected(ply)
+	minimap.UnRegister(ply)
 end
 
 function GM:PlayerSelectTeamSpawn(teamid, ply)
