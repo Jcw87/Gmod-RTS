@@ -4,9 +4,12 @@ local concommand = concommand
 local file = file
 local game = game
 local hook = hook
+local math = math
 local player = player
 local surface = surface
+local table = table
 local team = team
+local umsg = umsg
 local usermessage = usermessage
 local util = util
 local Entity = Entity
@@ -14,6 +17,7 @@ local ErrorNoHalt = ErrorNoHalt
 local LocalPlayer = LocalPlayer
 local Material = Material
 local pairs = pairs
+local RunConsoleCommand = RunConsoleCommand
 local tonumber = tonumber
 local tostring = tostring
 
@@ -98,25 +102,26 @@ if (SERVER) then
 	end
 	concommand.Add("mm_request_entity", mm_request_entity)
 
-	local t_plys, t_ents
+	local t_plys = {}
+	local t_ents = {}
 	
 	local function ServerThink()
-		if (!t_plys) then
+		if (#t_plys == 0) then
 			t_plys = player.GetAll()
 		end
 		local ply = t_plys[1]
 		if !ply then return end
-		if (!t_ents) then
-			t_ents = {}
+		if (#t_ents == 0) then
 			local ent
 			for k, v in pairs(Ents) do
 				ent = Entity(k)
+				if !ent:IsValid() then continue end
 				if (ply:Team() == ent:Team()) then
-					table.insert(ent)
+					table.insert(t_ents, ent)
 				end
 			end
 		end
-		local count = math.max(#t_ents, 28)
+		local count = math.min(#t_ents, 28)
 		umsg.Start("mm_pos_update", ply)
 		umsg.Char(count)
 		for i=1, count do
@@ -129,34 +134,28 @@ if (SERVER) then
 		end
 		umsg.End()
 		for i=1, count do table.remove(t_ents, 1) end
-		if (#t_ents == 0) then
-			t_ents = nil
-			table.remove(t_plys, 1)
-		end
-		if (#t_plys == 0) then t_plys = nil end
+		if (#t_ents == 0) then table.remove(t_plys, 1) end
 	end
 	hook.Add("Think", "MinimapServerThink", ServerThink)
 
 	function Register(ent)
-		local ent_id = ent:EntIndex()
-		Ents[ent] = {}
+		Ents[ent:EntIndex()] = {}
 	end
 
 	function UnRegister(ent)
-		local ent_id = ent:EntIndex()
-		Ents[ent_id] = nil
+		Ents[ent:EntIndex()] = nil
 	end
 end
 
 if (CLIENT) then
 	local function mm_pos_update(um)
 		local entid, x, y, ang
-		local count = um:GetChar()
+		local count = um:ReadChar()
 		for i=1, count do
 			entid = um:ReadShort()
 			if (!Ents[entid]) then
 				Ents[entid] = {}
-				RunConsoleCommand("minimap_request_entity", tostring(entid))
+				RunConsoleCommand("mm_request_entity", tostring(entid))
 			end
 			local enttable = Ents[entid]
 			enttable.x = um:ReadShort()
@@ -183,10 +182,10 @@ if (CLIENT) then
 			if !ent:IsValid() then continue end
 			v.class = ent:GetClass()
 			v.team = ent:Team()
-			local pos = k:GetPos()
+			local pos = ent:GetPos()
 			v.x = pos.x
 			v.y = pos.y
-			v.ang = k:IsPlayer() and (k:EyeAngles().y - 90) or 0
+			v.ang = ent:IsPlayer() and (ent:EyeAngles().y - 90) or 0
 		end
 	end
 	hook.Add("Think", "MinimapClientThink", ClientThink)
@@ -209,27 +208,17 @@ if (CLIENT) then
 		end
 		local ply = LocalPlayer()
 		local pos, minix, miniy, color, angle
-		--
-		for k, v in pairs(player.GetAll()) do
-			pos = v:GetPos()
-			minix, miniy = WorldToMinimap(pos.x, pos.y)
-			color = team.GetColor(v:Team())
-			surface.SetMaterial(Materials[v:GetClass()])
-			surface.SetDrawColor(color.r, color.g, color.b, color.a)
-			local angle = v:IsPlayer() and (v:EyeAngles().y - 90) or 0
-			surface.DrawTexturedRectRotated((minix*w) + x, (miniy*h) + y, 32, 32, angle)
-		end
-		--]]
-		--[[
 		for k, v in pairs(Ents) do
 			if !v.ang or !v.team or k == ply:EntIndex() then continue end
 			minix, miniy = WorldToMinimap(v.x, v.y)
 			color = team.GetColor(v.team)
-			surface.SetMaterial(Materials[v.Class])
+			mat = Materials[v.class]
+			if !mat then continue end
+			local size = v.class == "player" and 32 or 24
+			surface.SetMaterial(mat)
 			surface.SetDrawColor(color.r, color.g, color.b, color.a)
-			surface.DrawTexturedRectRotated((minix*w) + x, (miniy*h) + y, 32, 32, v.ang)
+			surface.DrawTexturedRectRotated((minix*w) + x, (miniy*h) + y, size, size, v.ang)
 		end
-		--]]
 		pos = ply:GetPos()
 		minix, miniy = WorldToMinimap(pos.x, pos.y)
 		surface.SetMaterial(Materials.player)
