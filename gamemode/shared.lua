@@ -70,6 +70,11 @@ color_red = Color( 255, 0, 0 )
 color_yellow = Color( 255, 255, 0 )
 color_green = Color( 0, 255, 0 )
 
+include("minimap.lua")
+include("spawnpoints.lua")
+include("entity_extension.lua")
+include("player_extension.lua")
+
 local TeamClasses = {"Engineer"}
 
 function GM:CreateTeams()
@@ -101,12 +106,10 @@ function GM:CreateTeams()
 	team.SetClass( TEAM_SPECTATOR, { "Spectator" } )
 end
 
-include("minimap.lua")
-include("spawnpoints.lua")
-include("entity_extension.lua")
-include("player_extension.lua")
-
 function GM:Initialize()
 	self.BaseClass:Initialize()
 	minimap.LoadEmpiresScript()
+	if (CLIENT) then
+		minimap.Panel = vgui.Create("Minimap")
+	end
 end

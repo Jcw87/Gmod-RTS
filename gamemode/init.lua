@@ -5,6 +5,7 @@ AddCSLuaFile("minimap.lua")
 AddCSLuaFile("spawnpoints.lua")
 AddCSLuaFile("entity_extension.lua")
 AddCSLuaFile("player_extension.lua")
+AddCSLuaFile("vgui/vgui_minimap.lua")
 
 include("shared.lua")
 

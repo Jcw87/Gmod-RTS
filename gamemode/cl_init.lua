@@ -1,5 +1,6 @@
 include("shared.lua")
 
+include("vgui/vgui_minimap.lua")
 include("cl_hud.lua")
 
 local function UpdateTeams(um)
