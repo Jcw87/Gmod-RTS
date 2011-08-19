@@ -74,8 +74,24 @@ function LoadEmpiresScript()
 	tomini_ratio_x = (image_right - image_left) / (map_right - map_left)
 	tomini_ratio_y = (image_bottom - image_top) / (map_bottom - map_top)
 	
-	sector_width = tonumber(t.sector_with or 256) / texture_w
-	sector_height = tonumber(t.sector_height or 256) / texture_h
+	-- This may seem wrong, but this is how Empires actually loads its minimap scripts.
+	sector_width = tonumber(t.sector_height or 256) / texture_w
+	sector_height = tonumber(t.sector_width or 256) / texture_h
+	
+	VLines = {}
+	HLines = {}
+	local linepos = image_left
+	while linepos < image_right do
+		table.insert(VLines, linepos)
+		linepos = linepos + sector_width
+	end
+	table.insert(VLines, image_right)
+	linepos = image_top
+	while linepos < image_bottom do
+		table.insert(HLines, linepos)
+		linepos = linepos + sector_height
+	end
+	table.insert(HLines, image_bottom)
 end
 
 function WorldToMinimap(worldx, worldy)
@@ -84,9 +100,14 @@ function WorldToMinimap(worldx, worldy)
 	return minix, miniy
 end
 
+function GetImageBounds()
+	return image_left, image_right, image_top, image_bottom
+end
+
 function GetSector(pos)
 	-- This isn't quite right
 	local minix, miniy = WorldToMinimap(pos.x, pos.y)
+	if minix < image_left || minix > image_right || miniy < image_top || miniy > image_bottom then return "Unknown" end
 	local SectorL = math.floor((minix - image_left) / sector_width)
 	local SectorN = math.floor((miniy - image_top) / sector_height)
 	return string.char(65 + SectorL, 49 + SectorN)
