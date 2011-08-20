@@ -39,3 +39,12 @@ function GM:PlayerSelectTeamSpawn(teamid, ply)
 	local barracks = table.Random(barracks_list)
 	if barracks then return barracks:GetSpawnPoint() end
 end
+
+local function rts_commander_place_building(ply, cmd, args)
+	if !ply:IsCommander() then return end
+	local ID = tonumber(args[1])
+	local Pos = Vector(tonumber(args[2]), tonumber(args[3]), tonumber(args[4]))
+	local Ang = tonumber(args[5])
+	if !GAMEMODE:CanPlaceBuilding(ID, Pos, Ang) then return end
+end
+concommand.Add("rts_commander_place_building", rts_commander_place_building)

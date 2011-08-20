@@ -69,6 +69,7 @@ color_blue = Color( 0, 0, 255 )
 color_red = Color( 255, 0, 0 )
 color_yellow = Color( 255, 255, 0 )
 color_green = Color( 0, 255, 0 )
+color_grey = Color(200, 200, 200)
 
 include("minimap.lua")
 include("spawnpoints.lua")
@@ -99,9 +100,9 @@ function GM:CreateTeams()
 		team.SetUp( TEAM_GREEN, "Green Team", color_green, true )
 		team.SetClass( TEAM_GREEN, TeamClasses )
 	end
-	team.SetUp( TEAM_CONNECTING, "Joining/Connecting", Color( 200, 200, 200 ), false )
-	team.SetUp( TEAM_UNASSIGNED, "Unassigned", Color( 200, 200, 200 ), false )
-	team.SetUp( TEAM_SPECTATOR, "Spectators", Color( 200, 200, 200 ), true )
+	team.SetUp( TEAM_CONNECTING, "Joining/Connecting", color_grey, false )
+	team.SetUp( TEAM_UNASSIGNED, "Unassigned", color_grey, false )
+	team.SetUp( TEAM_SPECTATOR, "Spectators", color_grey, true )
 	team.SetSpawnPoint( TEAM_SPECTATOR, "info_player_start" )
 	team.SetClass( TEAM_SPECTATOR, { "Spectator" } )
 end
@@ -111,5 +112,27 @@ function GM:Initialize()
 	minimap.LoadEmpiresScript()
 	if (CLIENT) then
 		minimap.Panel = vgui.Create("Minimap")
+		local Prop = ClientsideModel("models/imperial/buildings/refinery/imp_refinery.mdl", RENDERGROUP_TRANSLUCENT)
+		Prop:SetColor(0, 0, 0, 0)
+		GAMEMODE.Prop = Prop
 	end
+	GAMEMODE:RegisterBuilding("rts_refinery", "models/imperial/buildings/refinery/imp_refinery.mdl", "Refinery", 100)
+	GAMEMODE:RegisterBuilding("rts_barracks", "models/imperial/buildings/barracks/imp_barracks.mdl", "Barracks", 200)
+	GAMEMODE:RegisterBuilding("rts_vehiclefactory", "models/imperial/buildings/vehiclefactory/imp_vehiclefactory.mdl", "Vehicle Factory", 400)
 end
+
+function GM:CanPlaceBuilding(ID, Pos, Ang)
+
+end
+
+local Buildings = {}
+
+function GM:RegisterBuilding(class, model, name, cost)
+	local new = {class = class, model = model, name = name, cost = cost}
+	table.insert(Buildings, new)
+end
+
+function GM:GetBuildings()
+	return Buildings
+end
+
