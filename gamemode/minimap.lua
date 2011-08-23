@@ -12,6 +12,7 @@ local team = team
 local umsg = umsg
 local usermessage = usermessage
 local util = util
+local vgui = vgui
 local Entity = Entity
 local ErrorNoHalt = ErrorNoHalt
 local LocalPlayer = LocalPlayer
@@ -171,7 +172,7 @@ if (SERVER) then
 		for i=1, count do table.remove(t_ents, 1) end
 		if (#t_ents == 0) then table.remove(t_plys, 1) end
 	end
-	hook.Add("Think", "MinimapServerThink", ServerThink)
+	hook.Add("Think", "mm_ServerThink", ServerThink)
 
 	function Register(ent)
 		Ents[ent:EntIndex()] = {}
@@ -211,6 +212,11 @@ if (CLIENT) then
 	end
 	usermessage.Hook("mm_type_update", mm_type_update)
 	
+	local function init()
+		Panel = vgui.Create("Minimap")
+	end
+	hook.Add("PostGamemodeLoaded", "mm_init", init)
+	
 	local function ClientThink()
 		for k, v in pairs(Ents) do
 			local ent = Entity(k)
@@ -223,7 +229,7 @@ if (CLIENT) then
 			v.ang = ent:IsPlayer() and (ent:EyeAngles().y - 90) or 0
 		end
 	end
-	hook.Add("Think", "MinimapClientThink", ClientThink)
+	hook.Add("Think", "mm_ClientThink", ClientThink)
 
 	local Materials = {
 		["player"] = Material("vgui/player"),

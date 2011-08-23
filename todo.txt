@@ -1,6 +1,17 @@
-Add commander mode.
+Add commander movement.
+Add commander interface.
+Add refinery points.
 Add all buildings.
 Add weapons.
 Add classes.
-Make minimap function like a proper RTS minimap
+Add spawn selection.
+Improve spawn behavior.
+Make minimap function like a proper RTS minimap.
 In-Game bug reports.
+Minimap ping.
+Game HUD.
+Add Loadout customization.
+Add player skills.
+Add vehicles.
+Add vehicle customization.
+Add commander research.

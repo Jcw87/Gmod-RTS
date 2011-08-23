@@ -1,15 +1,19 @@
-AddCSLuaFile("cl_init.lua")
+AddCSLuaFile("cl_commander.lua")
 AddCSLuaFile("cl_hud.lua")
-AddCSLuaFile("shared.lua")
-AddCSLuaFile("minimap.lua")
-AddCSLuaFile("spawnpoints.lua")
+AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("entity_extension.lua")
+AddCSLuaFile("minimap.lua")
 AddCSLuaFile("player_extension.lua")
+AddCSLuaFile("shared.lua")
+AddCSLuaFile("spawnpoints.lua")
+AddCSLuaFile("vgui/vgui_commander.lua")
 AddCSLuaFile("vgui/vgui_minimap.lua")
 
 include("shared.lua")
 
 include("point_entities.lua")
+include("sv_commander.lua")
+
 include("empires_compat.lua")
 
 function GM:InitPostEntity()
@@ -40,11 +44,3 @@ function GM:PlayerSelectTeamSpawn(teamid, ply)
 	if barracks then return barracks:GetSpawnPoint() end
 end
 
-local function rts_commander_place_building(ply, cmd, args)
-	if !ply:IsCommander() then return end
-	local ID = tonumber(args[1])
-	local Pos = Vector(tonumber(args[2]), tonumber(args[3]), tonumber(args[4]))
-	local Ang = tonumber(args[5])
-	if !GAMEMODE:CanPlaceBuilding(ID, Pos, Ang) then return end
-end
-concommand.Add("rts_commander_place_building", rts_commander_place_building)

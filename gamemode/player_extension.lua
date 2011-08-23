@@ -1,7 +1,7 @@
 local meta = FindMetaTable("Player")
 
 function meta:IsCommander()
-	return self:GetNetworkedBool("IsCommander")
+	return self._IsCommander
 end
 
 local TeamMasks = {
@@ -18,11 +18,14 @@ end
 if SERVER then
 	function meta:SetCommander(bool)
 		if type(bool) != "boolean" then error("PLAYER:SetCommander: boolean expected, got "..type(bool), 2) end
-		self:SetNetworkedBool("IsCommander", bool)
+		self._IsCommander = bool
 		if (bool) then
 			self:SetGravity(0.00000001)
 		else
 			self:SetGravity(1)
 		end
+		umsg.Start("comm_mode_enable", self)
+		umsg.Bool(bool)
+		umsg.End()
 	end
 end

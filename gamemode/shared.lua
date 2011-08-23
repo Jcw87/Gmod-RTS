@@ -110,19 +110,48 @@ end
 function GM:Initialize()
 	self.BaseClass:Initialize()
 	minimap.LoadEmpiresScript()
-	if (CLIENT) then
-		minimap.Panel = vgui.Create("Minimap")
-		local Prop = ClientsideModel("models/imperial/buildings/refinery/imp_refinery.mdl", RENDERGROUP_TRANSLUCENT)
-		Prop:SetColor(0, 0, 0, 0)
-		GAMEMODE.Prop = Prop
-	end
 	GAMEMODE:RegisterBuilding("rts_refinery", "models/imperial/buildings/refinery/imp_refinery.mdl", "Refinery", 100)
 	GAMEMODE:RegisterBuilding("rts_barracks", "models/imperial/buildings/barracks/imp_barracks.mdl", "Barracks", 200)
 	GAMEMODE:RegisterBuilding("rts_vehiclefactory", "models/imperial/buildings/vehiclefactory/imp_vehiclefactory.mdl", "Vehicle Factory", 400)
 end
 
 function GM:CanPlaceBuilding(ID, Pos, Ang)
+	-- Check for obstructions
+	local tpos = Pos + Vector(0, 0, 16)
+	local t = {mask = MASK_PLAYERSOLID}
+	t.start = tpos
+	t.endpos = tpos
+	t.mins = Vector(-128. -128, 0)
+	t.maxs = Vector(128, 128, 128)
+	local tr = util.TraceHull(t)
+	if tr.Hit then return false end
 
+	-- Check to make sure it isn't hanging off a cliff or in the air
+	t.mask = CONTENTS_SOLID
+	local rot = Angle(0, Ang, 0)
+	local locs = {}
+	locs[1] = tpos
+	local v
+	v = Vector(-128, -128, 0)
+	v:Rotate(rot)
+	locs[2] = tpos + v
+	v = Vector(128, -128, 0)
+	v:Rotate(rot)
+	locs[3] = tpos + v
+	v = Vector(128, 128, 0)
+	v:Rotate(rot)
+	locs[4] = tpos + v
+	v = Vector(-128, 128, 0)
+	v:Rotate(rot)
+	locs[5] = tpos + v
+	for i=1,5 do
+		tpos = locs[i]
+		t.start = tpos
+		t.endpos = tpos + Vector(0, 0, -32)
+		tr = util.TraceLine(t)
+		if !tr.HitWorld || tr.HitSky || tr.HitNoDraw then return false end
+	end
+	return true
 end
 
 local Buildings = {}
