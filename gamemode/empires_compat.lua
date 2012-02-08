@@ -6,6 +6,7 @@ ENT.Type = "point"
 ENT.Base = "base_point"
 function ENT:Initialize()
 	// There are only 2 teams in Empires
+	GAMEMODE.TeamMask = TEAM_BLUE_MASK | TEAM_RED_MASK
 end
 function ENT:KeyValue(key, value)
 

@@ -33,12 +33,12 @@ hook.Add("Think", "comm_think", think)
 
 local function comm_mouse(mc, aim)
 	if !LocalPlayer():IsCommander() then return end
-	if mc == MOUSE_LEFT then
-		local ID = commander.Building
+	local BuildingID = commander.Building
+	if mc == MOUSE_LEFT and BuildingID > 0 then
 		local Pos = LocalPlayer():GetEyeTrace().HitPos
 		local Ang = commander.Ghost:GetAngles().y
-		if !GAMEMODE:CanPlaceBuilding(ID, Pos, Ang) then return end
-		RunConsoleCommand("rts_commander_place_building", tostring(ID), tostring(Pos.x), tostring(Pos.y), tostring(Pos.z), tostring(Ang))
+		if !GAMEMODE:CanPlaceBuilding(BuildingID, Pos, Ang) then return end
+		RunConsoleCommand("rts_commander_place_building", tostring(BuildingID), tostring(Pos.x), tostring(Pos.y), tostring(Pos.z), tostring(Ang))
 	end
 	if mc == MOUSE_RIGHT then
 		commander.Building = 0

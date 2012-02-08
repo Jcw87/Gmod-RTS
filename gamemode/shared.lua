@@ -82,7 +82,7 @@ function GM:CreateTeams()
 	if !GAMEMODE.TeamMask then GAMEMODE.TeamMask = TEAM_BLUE_MASK | TEAM_RED_MASK | TEAM_YELLOW_MASK | TEAM_GREEN_MASK end
 	local teams = team.GetAllTeams()
 	for k, v in pairs(teams) do
-		if k < TEAM_CONNECTING then teams[k] = nil end
+		if k > TEAM_CONNECTING && k < TEAM_UNASSIGNED then teams[k] = nil end
 	end
 	if GAMEMODE.TeamMask & TEAM_BLUE_MASK > 0 then
 		team.SetUp( TEAM_BLUE, "Blue Team", color_blue, true )
